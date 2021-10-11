@@ -6,7 +6,7 @@ steps:
     entrypoint: /bin/sh
     args:
       - '-c'
-      - 'echo $SHORT_SHA $BRANCH_NAME $_HEAD_BRANCH $_BASE_BRANCH $_HEAD_REPO_URL $_PR_NUMBER
+      - 'echo $SHORT_SHA $BRANCH_NAME $_HEAD_BRANCH $_BASE_BRANCH $_HEAD_REPO_URL $_PR_NUMBER'
       
  
 
