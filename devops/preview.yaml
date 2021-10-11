@@ -1,0 +1,14 @@
+steps:
+  - name: 'gcr.io/cloud-builders/gcloud'
+    id: Echo Vars
+    waitFor:
+      - '-'
+    entrypoint: /bin/sh
+    args:
+      - '-c'
+      - 'echo $SHORT_SHA $BRANCH_NAME $_HEAD_BRANCH $_BASE_BRANCH $_HEAD_REPO_URL $_PR_NUMBER
+      
+ 
+
+tags: [$_APP_NAME, $_APP_ENV]
+timeout: 1800s
