@@ -7,8 +7,75 @@ steps:
     args:
       - '-c'
       - 'echo $SHORT_SHA $BRANCH_NAME $_HEAD_BRANCH $_BASE_BRANCH $_HEAD_REPO_URL $_PR_NUMBER'
-      
+  
+  - name: 'gcr.io/cloud-builders/docker'
+    id: Pull Previous Build
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        docker pull gcr.io/$PROJECT_ID/gcb-test/builder || true
+  - id: 'Build Builder'
+    name: 'gcr.io/cloud-builders/docker'
+    waitFor:
+      - 'Pull Previous Build'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        docker build \
+            --cache-from 'gcr.io/$PROJECT_ID/gcb-test/builder' \
+            --target builder \
+            -t gcr.io/$PROJECT_ID/gcb-test/builder \
+            .
+  - name: 'gcr.io/cloud-builders/docker'
+    id: Push Builder
+    waitFor:
+      - 'Build Builder'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/gcb-test/builder'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: Run lint and tests 
+    waitFor:
+      - 'Build Builder'
+    entrypoint: '/bin/bash'
+    args:
+      - '-c'
+      - 'docker run gcr.io/$PROJECT_ID/gcb-test/builder npm run test'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: Build
+    waitFor:
+      - 'Build Builder'
+    args:
+      - 'build'
+      - '--cache-from'
+      - 'gcr.io/$PROJECT_ID/gcb-test:latest'
+      - '--cache-from'
+      - 'gcr.io/$PROJECT_ID/gcb-test/builder'
+      - '-t'
+      - 'gcr.io/$PROJECT_ID/gcb-test:$SHORT_SHA'
+      - '.'
+    timeout: 600s
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: Push
+    waitFor:
+      - 'Build'
+    args:
+      - 'push'
+      - 'gcr.io/$PROJECT_ID/gcb-test:$SHORT_SHA'
+
+  - name: gcr.io/cloud-builders/docker
+    id: Tag Preview Env
+    waitFor:
+      - 'Push'
+    args:
+      - 'tag'
+      - 'gcr.io/$PROJECT_ID/gcb-test:$SHORT_SHA'
  
 
-tags: [$_APP_NAME, $_APP_ENV]
+tags: [gcb-test]
 timeout: 1800s
