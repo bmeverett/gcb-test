@@ -1,6 +1,5 @@
 FROM node:16 as base
 ENV NODE_ENV=production
-ARG FLO_NPM_TOKEN
 
 FROM base as deps
 
@@ -26,11 +25,9 @@ RUN npm run build
 FROM node:16-alpine
 ENV NODE_ENV=production
 WORKDIR /app
-ARG FLO_NPM_TOKEN
 COPY --from=production-deps /app/node_modules /app/node_modules
 
 COPY --from=builder /app/dist /app/dist
-COPY --from=builder /app/public /app/public
 RUN apk --no-cache add tini
 
 EXPOSE 3000
