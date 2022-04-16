@@ -1,15 +1,13 @@
 steps:
-  - name: 'gcr.io/cloud-builders/docker'
-    id: Pull Previous Build
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        docker pull us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder || true
+  # - name: 'gcr.io/cloud-builders/docker'
+  #   id: Pull Previous Build
+  #   entrypoint: 'bash'
+  #   args:
+  #     - '-c'
+  #     - |
+  #       docker pull us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder || true
   - id: 'Build Builder'
     name: 'gcr.io/cloud-builders/docker'
-    waitFor:
-      - 'Pull Previous Build'
     entrypoint: 'bash'
     args:
       - '-c'
@@ -18,6 +16,7 @@ steps:
             --cache-from=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder \
             --cache-to=type=inline \
             --target builder \
+            --push \
             -t us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder \
             .
   - name: 'gcr.io/cloud-builders/docker'
@@ -46,8 +45,9 @@ steps:
       - |
         docker buildx build \
             --cache-from=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder \
-            --cache-to=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/$SHORT_SHA \
-            -t us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test:$SHORT_SHA \
+            --cache-to=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA,mode=max \
+            --push \
+            -t us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA \
             .
       # - 'build'
       # - '--cache-from'
@@ -65,7 +65,7 @@ steps:
       - 'Build'
     args:
       - 'push'
-      - 'us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test:$SHORT_SHA'
+      - 'us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA'
 
   # - name: gcr.io/cloud-builders/docker
   #   id: Tag Preview Env
@@ -78,6 +78,6 @@ steps:
 
 tags: [gcb-test]
 images:
-  - 'us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test:$SHORT_SHA'
+  - 'us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA'
   - 'us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder'
 timeout: 1800s
