@@ -58,7 +58,7 @@ steps:
       - 'Build'
     args:
       - 'push'
-      - 'us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test:$SHORT_SHA'
+      - 'us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/$SHORT_SHA'
 
   # - name: gcr.io/cloud-builders/docker
   #   id: Tag Preview Env
@@ -71,6 +71,6 @@ steps:
 
 tags: [gcb-test]
 images:
-  - 'us-east1-docker.pkg.dev/$PROJECT_ID/$_APP_NAME:$SHORT_SHA'
+  - 'us-east1-docker.pkg.dev/$PROJECT_ID/$_APP_NAME/$SHORT_SHA'
   - 'us-east1-docker.pkg.dev/$PROJECT_ID/$_APP_NAME/builder'
 timeout: 1800s
