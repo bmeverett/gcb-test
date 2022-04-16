@@ -1,12 +1,4 @@
 steps:
-  - name: 'gcr.io/cloud-builders/gcloud'
-    id: Echo Vars
-    waitFor:
-      - '-'
-    entrypoint: /bin/sh
-    args:
-      - '-c'
-      - 'echo $SHORT_SHA $BRANCH_NAME $_HEAD_BRANCH $_BASE_BRANCH $_HEAD_REPO_URL $_PR_NUMBER'
   
   - name: 'gcr.io/cloud-builders/docker'
     id: Pull Previous Build
@@ -14,7 +6,7 @@ steps:
     args:
       - '-c'
       - |
-        docker pull gcr.io/$PROJECT_ID/gcb-test/builder || true
+        docker pull us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder || true
   - id: 'Build Builder'
     name: 'gcr.io/cloud-builders/docker'
     waitFor:
@@ -24,9 +16,9 @@ steps:
       - '-c'
       - |
         docker build \
-            --cache-from 'gcr.io/$PROJECT_ID/gcb-test/builder' \
+            --cache-from 'us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder' \
             --target builder \
-            -t gcr.io/$PROJECT_ID/gcb-test/builder \
+            -t us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder \
             .
   - name: 'gcr.io/cloud-builders/docker'
     id: Push Builder
@@ -34,7 +26,7 @@ steps:
       - 'Build Builder'
     args:
       - 'push'
-      - 'gcr.io/$PROJECT_ID/gcb-test/builder'
+      - 'us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder'
 
   - name: 'gcr.io/cloud-builders/docker'
     id: Run lint and tests 
@@ -43,7 +35,7 @@ steps:
     entrypoint: '/bin/bash'
     args:
       - '-c'
-      - 'docker run gcr.io/$PROJECT_ID/gcb-test/builder npm run test'
+      - 'docker run us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder npm run test'
 
   - name: 'gcr.io/cloud-builders/docker'
     id: Build
@@ -52,11 +44,11 @@ steps:
     args:
       - 'build'
       - '--cache-from'
-      - 'gcr.io/$PROJECT_ID/gcb-test:latest'
+      - 'us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test:latest'
       - '--cache-from'
-      - 'gcr.io/$PROJECT_ID/gcb-test/builder'
+      - 'us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder'
       - '-t'
-      - 'gcr.io/$PROJECT_ID/gcb-test:$SHORT_SHA'
+      - 'us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test:$SHORT_SHA'
       - '.'
     timeout: 600s
 
@@ -66,16 +58,19 @@ steps:
       - 'Build'
     args:
       - 'push'
-      - 'gcr.io/$PROJECT_ID/gcb-test:$SHORT_SHA'
+      - 'us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test:$SHORT_SHA'
 
-  - name: gcr.io/cloud-builders/docker
-    id: Tag Preview Env
-    waitFor:
-      - 'Push'
-    args:
-      - 'tag'
-      - 'gcr.io/$PROJECT_ID/gcb-test:$SHORT_SHA'
+  # - name: gcr.io/cloud-builders/docker
+  #   id: Tag Preview Env
+  #   waitFor:
+  #     - 'Push'
+  #   args:
+  #     - 'tag'
+  #     - 'gcr.io/$PROJECT_ID/gcb-test:$SHORT_SHA'
  
 
 tags: [gcb-test]
+images:
+  - 'us-east1-docker.pkg.dev/$PROJECT_ID/$_APP_NAME:$SHORT_SHA'
+  - 'us-east1-docker.pkg.dev/$PROJECT_ID/$_APP_NAME/builder'
 timeout: 1800s
