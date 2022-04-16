@@ -1,3 +1,8 @@
+
+options:
+  env:
+    - DOCKER_CLI_EXPERIMENTAL=enabled
+    
 steps:
   # - name: 'gcr.io/cloud-builders/docker'
   #   id: Pull Previous Build
