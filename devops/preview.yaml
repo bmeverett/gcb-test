@@ -22,7 +22,7 @@ steps:
             --cache-to=type=inline \
             --target builder \
             -t us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder \
-            .
+            --push .
   - name: 'gcr.io/cloud-builders/docker'
     id: Push Builder
     waitFor:
@@ -51,7 +51,7 @@ steps:
             --cache-from=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder \
             --cache-to=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA,mode=max \
             -t us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA \
-            .
+            --push .
       # - 'build'
       # - '--cache-from'
       # - 'us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test:latest'
