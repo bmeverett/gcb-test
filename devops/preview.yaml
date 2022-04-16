@@ -49,17 +49,8 @@ steps:
       - |
         docker buildx build \
             --cache-from=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder \
-            --cache-to=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA,mode=max \
             -t us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA \
             --push .
-      # - 'build'
-      # - '--cache-from'
-      # - 'us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test:latest'
-      # - '--cache-from'
-      # - 'us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder'
-      # - '-t'
-      # - 'us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test:$SHORT_SHA'
-      # - '.'
     timeout: 600s
 
   - name: 'gcr.io/cloud-builders/docker'
