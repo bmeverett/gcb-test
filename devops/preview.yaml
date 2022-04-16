@@ -2,7 +2,7 @@
 options:
   env:
     - DOCKER_CLI_EXPERIMENTAL=enabled
-    
+
 steps:
   # - name: 'gcr.io/cloud-builders/docker'
   #   id: Pull Previous Build
@@ -21,7 +21,6 @@ steps:
             --cache-from=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder \
             --cache-to=type=inline \
             --target builder \
-            --push \
             -t us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder \
             .
   - name: 'gcr.io/cloud-builders/docker'
@@ -51,7 +50,6 @@ steps:
         docker buildx build \
             --cache-from=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder \
             --cache-to=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA,mode=max \
-            --push \
             -t us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA \
             .
       # - 'build'
