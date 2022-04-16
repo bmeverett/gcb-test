@@ -48,7 +48,6 @@ steps:
       - '-c'
       - |
         docker buildx build \
-            -t us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA \
             --cache-from=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder \
             --push .
     timeout: 600s
