@@ -44,11 +44,14 @@ steps:
     id: Build
     waitFor:
       - 'Build Builder'
+    entrypoint: 'bash'
     args:
       - '-c'
       - |
         docker buildx build \
             --cache-from=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder \
+            --cache-to=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA \
+            -t us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA \
             --push .
     timeout: 600s
 
