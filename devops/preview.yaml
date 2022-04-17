@@ -18,7 +18,7 @@ steps:
       - '-c'
       - |
         docker buildx build \
-            --cache-from=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder \
+            --cache-from=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder,mode=max \
             --cache-to=type=inline \
             --target builder \
             -t us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder \
@@ -51,6 +51,7 @@ steps:
         docker buildx create --use &&
         docker buildx build \
             --cache-from=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder \
+            --cache-from=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images \
             --cache-to=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA \
             -t us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA \
             --push .
@@ -74,7 +75,4 @@ steps:
  
 
 tags: [gcb-test]
-images:
-  - 'us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA'
-  - 'us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder'
 timeout: 1800s
