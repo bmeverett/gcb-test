@@ -48,6 +48,7 @@ steps:
     args:
       - '-c'
       - |
+        docker buildx create --use &&
         docker buildx build \
             --cache-from=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder \
             --cache-to=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA \
