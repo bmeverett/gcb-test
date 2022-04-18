@@ -10,7 +10,7 @@ steps:
   #   args:
   #     - '-c'
   #     - |
-  #       docker pull us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder || true
+  #       docker pull gcr.io/$PROJECT_ID/gcb-test/builder || true
   - id: 'Build Builder'
     name: 'gcr.io/cloud-builders/docker'
     entrypoint: 'bash'
@@ -18,10 +18,10 @@ steps:
       - '-c'
       - |
         docker buildx build \
-            --cache-from=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder,mode=max \
+            --cache-from=type=registry,ref=gcr.io/$PROJECT_ID/gcb-test/builder,mode=max \
             --cache-to=type=inline \
             --target builder \
-            -t us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder \
+            -t gcr.io/$PROJECT_ID/gcb-test/builder \
             --push .
   - name: 'gcr.io/cloud-builders/docker'
     id: Push Builder
@@ -29,7 +29,7 @@ steps:
       - 'Build Builder'
     args:
       - 'push'
-      - 'us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder'
+      - 'gcr.io/$PROJECT_ID/gcb-test/builder'
 
   - name: 'gcr.io/cloud-builders/docker'
     id: Run lint and tests 
@@ -38,7 +38,7 @@ steps:
     entrypoint: '/bin/bash'
     args:
       - '-c'
-      - 'docker run us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder npm run test'
+      - 'docker run gcr.io/$PROJECT_ID/gcb-test/builder npm run test'
 
   - name: 'gcr.io/cloud-builders/docker'
     id: Build
@@ -50,10 +50,10 @@ steps:
       - |
         docker buildx create --use &&
         docker buildx build \
-            --cache-from=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder \
-            --cache-from=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images \
-            --cache-to=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA \
-            -t us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA \
+            --cache-from=type=registry,ref=gcr.io/$PROJECT_ID/gcb-test/builder \
+            --cache-from=type=registry,ref=gcr.io/$PROJECT_ID/gcb-test/images \
+            --cache-to=type=registry,ref=gcr.io/$PROJECT_ID/gcb-test/images:$SHORT_SHA \
+            -t gcr.io/$PROJECT_ID/gcb-test/images:$SHORT_SHA \
             --push .
     timeout: 600s
 
@@ -63,7 +63,7 @@ steps:
   #     - 'Build'
   #   args:
   #     - 'push'
-  #     - 'us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA'
+  #     - 'gcr.io/$PROJECT_ID/gcb-test/images:$SHORT_SHA'
 
   # - name: gcr.io/cloud-builders/docker
   #   id: Tag Preview Env
