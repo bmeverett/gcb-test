@@ -22,13 +22,13 @@ steps:
             --cache-to=type=inline,mode=max \
             --target builder \
             --push -t us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder .
-  - name: 'gcr.io/cloud-builders/docker'
-    id: Push Builder
-    waitFor:
-      - 'Build Builder'
-    args:
-      - 'push'
-      - 'us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder'
+  # - name: 'gcr.io/cloud-builders/docker'
+  #   id: Push Builder
+  #   waitFor:
+  #     - 'Build Builder'
+  #   args:
+  #     - 'push'
+  #     - 'us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder'
 
   - name: 'gcr.io/cloud-builders/docker'
     id: Run lint and tests 
