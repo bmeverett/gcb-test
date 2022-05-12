@@ -1,36 +1,32 @@
-
+# yaml-language-server: $schema=https://json.schemastore.org/cloudbuild.json
 options:
   env:
     - DOCKER_CLI_EXPERIMENTAL=enabled
 
 steps:
-  # - name: 'gcr.io/cloud-builders/docker'
-  #   id: Pull Previous Build
+
+  - name: 'gcr.io/cloud-builders/docker:20.10.3'
+    args: ['buildx', 'create', '--name', 'mybuilder']
+    id: 'create-builder'
+  - name: 'gcr.io/cloud-builders/docker:20.10.3'
+    args: ['buildx', 'use', 'mybuilder']
+    id: 'select-builder'
+
+  - name: 'gcr.io/cloud-builders/docker:20.10.3'
+    args: ['buildx', 'build', '--cache-from', 'type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder', 'cache-to', 'type=inline', '--target', 'builder', '--push', '-t', 'us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builde', '.' ]
+    id: 'Build Builder'
+  # - id: 'Build Builder'
+  #   name: 'gcr.io/cloud-builders/docker'
   #   entrypoint: 'bash'
   #   args:
   #     - '-c'
   #     - |
-  #       docker pull us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder || true
-  - id: 'Build Builder'
-    name: 'gcr.io/cloud-builders/docker'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        docker buildx create --use && \
-        docker buildx build \
-            --cache-from=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder \
-            --cache-to=type=inline \
-            --target builder \
-            --push -t us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder .
-
-  # - name: 'gcr.io/cloud-builders/docker'
-  #   id: Push Builder
-  #   waitFor:
-  #     - 'Build Builder'
-  #   args:
-  #     - 'push'
-  #     - 'us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder'
+  #       docker buildx create --use && \
+  #       docker buildx build \
+  #           --cache-from=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder \
+  #           --cache-to=type=inline \
+  #           --target builder \
+  #           --push -t us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder .
 
   - name: 'gcr.io/cloud-builders/docker'
     id: Run lint and tests 
@@ -41,38 +37,26 @@ steps:
       - '-c'
       - 'docker run us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder npm run test'
 
-  - name: 'gcr.io/cloud-builders/docker'
-    id: Build
-    waitFor:
-      - 'Build Builder'
-    entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        docker buildx create --use &&
-        docker buildx build \
-            --cache-from=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder \
-            --cache-from=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images \
-            --cache-to=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA \
-            -t us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA \
-            --push .
-    timeout: 600s
-
   # - name: 'gcr.io/cloud-builders/docker'
-  #   id: Push
+  #   id: Build
   #   waitFor:
-  #     - 'Build'
+  #     - 'Build Builder'
+  #   entrypoint: 'bash'
   #   args:
-  #     - 'push'
-  #     - 'us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA'
+  #     - '-c'
+  #     - |
+  #       docker buildx create --use &&
+  #       docker buildx build \
+  #           --cache-from=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder \
+  #           --cache-from=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images \
+  #           --cache-to=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA \
+  #           -t us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA \
+  #           --push .
+  #   timeout: 600s
+  - name: 'gcr.io/cloud-builders/docker:20.10.3'
+    args: ['buildx', 'build', '--cache-from', 'type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder', 'cache-to', 'type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA', '--push', '-t', 'us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA', '.' ]
+    id: 'Build'
 
-  # - name: gcr.io/cloud-builders/docker
-  #   id: Tag Preview Env
-  #   waitFor:
-  #     - 'Push'
-  #   args:
-  #     - 'tag'
-  #     - 'gcr.io/$PROJECT_ID/gcb-test:$SHORT_SHA'
  
 
 tags: [gcb-test]
