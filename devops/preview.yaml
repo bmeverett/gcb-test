@@ -11,10 +11,21 @@ steps:
   - name: 'gcr.io/cloud-builders/docker:20.10.3'
     args: ['buildx', 'use', 'mybuilder']
     id: 'select-builder'
+    waitFor:
+      - 'create-builder'
 
+  - name: 'gcr.io/cloud-builders/docker:20.10.3'
+    args: ['buildx', 'inspect', '--bootstrap']
+    id: 'bootstrap'
+    waitFor:
+      - 'create-builder'
+  
   - name: 'gcr.io/cloud-builders/docker:20.10.3'
     #args: ['buildx', 'build', '--cache-from', 'type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder', 'cache-to', 'type=inline', '--target', 'builder', '--push', '-t', 'us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builde', '.' ]
     id: 'Build Builder'
+    waitFor:
+      - 'bootstrap'
+      
   # - id: 'Build Builder'
   #   name: 'gcr.io/cloud-builders/docker'
   #   entrypoint: 'bash'
