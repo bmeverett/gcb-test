@@ -31,7 +31,7 @@ steps:
   #   entrypoint: 'bash'
     args:
       - '-c'
-      - \
+      - |
         docker buildx build \
             --cache-from type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder \
             --cache-to type=inline \
