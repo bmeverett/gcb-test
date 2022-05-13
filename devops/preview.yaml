@@ -22,6 +22,19 @@ steps:
   
   - name: 'gcr.io/cloud-builders/docker:20.10.3'
     #args: ['buildx', 'build', '--cache-from', 'type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder', '--cache-to', 'type=inline', '--target', 'builder', '--push', '-t', 'us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder', '.' ]
+    args: 
+     - buildx
+     - build
+     - --cache-from
+     - type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder 
+     - --cache-to
+     - type=inline 
+     - --target
+     - builder
+     - --push
+     - -t
+     - us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder
+     - . 
     id: 'Build Builder'
     waitFor:
       - 'bootstrap'
@@ -29,14 +42,14 @@ steps:
   # - id: 'Build Builder'
   #   name: 'gcr.io/cloud-builders/docker'
   #   entrypoint: 'bash'
-    args:
-      - '-c'
-      - |
-        docker buildx build \
-            --cache-from type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder \
-            --cache-to type=inline \
-            --target builder \
-            --push -t us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder .
+    # args:
+    #   - '-c'
+    #   - |
+    #     docker buildx build \
+    #         --cache-from type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder \
+    #         --cache-to type=inline \
+    #         --target builder \
+    #         --push -t us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder .
 
   - name: 'gcr.io/cloud-builders/docker'
     id: Run lint and tests 
