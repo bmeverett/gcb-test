@@ -1,7 +1,6 @@
 steps:
    - name: 'gcr.io/cloud-builders/git'
      id: 'Get Version'
-     entrypoint: 'bash'
      args: [fetch, --depth=100]
 
    - name: 'gcr.io/cloud-builders/git'
