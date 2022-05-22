@@ -6,6 +6,7 @@ steps:
    - name: 'gcr.io/cloud-builders/git'
      id: 'Replace Version'
      entrypoint: 'bash'
+     waitFor: 'Get Version'
      args: 
      - '-c'
      - |
