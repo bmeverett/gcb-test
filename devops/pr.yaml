@@ -1,8 +1,4 @@
 steps:
-   - name: 'gcr.io/cloud-builders/git'
-     id: 'Get Version'
-     args: [fetch, --depth=100]
-
    - name: 'gcr.io/cloud-builders/gcloud'
      id: 'Get Version'
      entrypoint: 'bash'
@@ -10,7 +6,7 @@ steps:
       - '-c'
       - |
         set -e
-        chmod +x ./devops/cloudbuild/scripts/git-version.bash
-        ./devops/cloudbuild/scripts/git-version.bash
+        chmod +x ./devops/scripts/git-version.bash
+        ./devops/scripts/git-version.bash
 
   
