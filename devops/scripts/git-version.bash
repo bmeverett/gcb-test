@@ -5,12 +5,12 @@ if [ -z "$TAG_NAME"]
 then
     echo here
     TAG_NAME=$(curl -X "POST" "https://api.github.com/graphql" \
-     -H 'Authorization: Bearer "$_FLO_NPM_TOKEN"' \
+     -H "Authorization: Bearer $_FLO_NPM_TOKEN" \
      -H 'Content-Type: application/json; charset=utf-8' \
      -d $'{
 	"query": "query{repository(name:\\"experience-service\\",owner:\\"flocasts\\"){releases(last:1){nodes{tagName}}}}",
 	"variables": {}
-}' | jq -r .data.repository.releases.nodes[].tagName)
+}')
 fi
 TAG_NAME=$(sed 's/^v//' <<< $TAG_NAME)
 #echo $TAG_NAME >> /workspace/version.txt
