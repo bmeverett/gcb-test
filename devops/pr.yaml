@@ -3,16 +3,14 @@ steps:
      id: 'Get Version'
      args: [fetch, --depth=100]
 
-   - name: 'gcr.io/cloud-builders/git'
-     id: 'Replace Version'
+   - name: 'gcr.io/cloud-builders/gcloud'
+     id: 'Get Version'
      entrypoint: 'bash'
-     waitFor: 
-     - 'Get Version'
      args: 
-     - '-c'
-     - |
-       set -e
-       chmod +x ./devops/scripts/git-version.bash
-       ./devops/scripts/git-version.bash
+      - '-c'
+      - |
+        set -e
+        chmod +x ./devops/cloudbuild/scripts/git-version.bash
+        ./devops/cloudbuild/scripts/git-version.bash
 
   
