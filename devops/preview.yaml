@@ -21,19 +21,19 @@ steps:
       - 'create-builder'
   
   - name: 'gcr.io/cloud-builders/docker:20.10.3'
-    #args: ['buildx', 'build', '--cache-from', 'type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder', '--cache-to', 'type=inline', '--target', 'builder', '--push', '-t', 'us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder', '.' ]
+    #args: ['buildx', 'build', '--cache-from', 'type=registry,ref=us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/builder', '--cache-to', 'type=inline', '--target', 'builder', '--push', '-t', 'us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/builder', '.' ]
     args: 
      - buildx
      - build
      - --cache-from
-     - type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder 
+     - type=registry,ref=us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/builder 
      - --cache-to
      - type=inline 
      - --target
      - builder
      - --push
      - -t
-     - us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder
+     - us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/builder
      - . 
     id: 'Build Builder'
     waitFor:
@@ -46,10 +46,10 @@ steps:
     #   - '-c'
     #   - |
     #     docker buildx build \
-    #         --cache-from type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder \
+    #         --cache-from type=registry,ref=us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/builder \
     #         --cache-to type=inline \
     #         --target builder \
-    #         --push -t us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder .
+    #         --push -t us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/builder .
 
   - name: 'gcr.io/cloud-builders/docker'
     id: Run lint and tests 
@@ -58,7 +58,7 @@ steps:
     entrypoint: '/bin/bash'
     args:
       - '-c'
-      - 'docker run us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder npm run test'
+      - 'docker run us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/builder npm run test'
 
   # - name: 'gcr.io/cloud-builders/docker'
   #   id: Build
@@ -70,14 +70,14 @@ steps:
   #     - |
   #       docker buildx create --use &&
   #       docker buildx build \
-  #           --cache-from=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder \
-  #           --cache-from=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images \
-  #           --cache-to=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA \
-  #           -t us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA \
+  #           --cache-from=type=registry,ref=us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/builder \
+  #           --cache-from=type=registry,ref=us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/images \
+  #           --cache-to=type=registry,ref=us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA \
+  #           -t us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA \
   #           --push .
   #   timeout: 600s
   - name: 'gcr.io/cloud-builders/docker:20.10.3'
-    args: ['buildx', 'build', '--cache-from', 'type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder', '--cache-to', 'type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA', '--push', '-t', 'us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA', '.' ]
+    args: ['buildx', 'build', '--cache-from', 'type=registry,ref=us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/builder', '--cache-to', 'type=registry,ref=us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA', '--push', '-t', 'us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA', '.' ]
     id: 'Build'
     waitFor:
       - 'Build Builder'
@@ -86,10 +86,10 @@ steps:
     #   - |
     #     docker buildx create --use &&
     #     docker buildx build \
-    #         --cache-from=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/builder \
-    #         --cache-from=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images \
-    #         --cache-to=type=registry,ref=us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA \
-    #         -t us-east1-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA \
+    #         --cache-from=type=registry,ref=us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/builder \
+    #         --cache-from=type=registry,ref=us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/images \
+    #         --cache-to=type=registry,ref=us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA \
+    #         -t us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA \
     #         --push .
     timeout: 600s
 

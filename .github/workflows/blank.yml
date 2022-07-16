@@ -15,10 +15,17 @@ jobs:
   merge_job:
     # this job will only run if the PR has been merged
     if: github.event.pull_request.merged == true
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest 
     steps:
-    - run: |
-        echo PR #${{ github.event.number }} has been merged
+    - id: 'auth'
+      uses: 'google-github-actions/auth@v0'
+      with:
+        credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+    - name: 'Set up Cloud SDK'
+      uses: 'google-github-actions/setup-gcloud@v0'
+
+    - name: 'Use gcloud CLI'
+      run: 'gcloud container images add-tag us-east5-docker.pkg.dev/cogent-calling-112015/gcb-/builder:${{ github.event.number } us-east5-docker.pkg.dev/cogent-calling-112015/gcb-tes/builder:stag'
   close_job:
     # this job will only run if the PR has been closed without being merged
     if: github.event.pull_request.merged == false
