@@ -4,7 +4,6 @@ options:
     - DOCKER_CLI_EXPERIMENTAL=enabled
 
 steps:
-
   - name: 'gcr.io/cloud-builders/docker:20.10.3'
     args: ['buildx', 'create', '--name', 'mybuilder']
     id: 'create-builder'
@@ -92,8 +91,6 @@ steps:
     #         -t us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA \
     #         --push .
     timeout: 600s
-
- 
 
 tags: [gcb-test]
 timeout: 1800s
