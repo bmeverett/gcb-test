@@ -18,12 +18,33 @@ steps:
     id: 'bootstrap'
     waitFor:
       - 'create-builder'
+
+  - name: 'gcr.io/cloud-builders/docker:20.10.3'
+    #args: ['buildx', 'build', '--cache-from', 'type=registry,ref=us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/builder', '--cache-to', 'type=inline', '--target', 'builder', '--push', '-t', 'us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/builder', '.' ]
+    args: 
+     - buildx
+     - build
+     - --cache-from
+     - type=registry,ref=us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/deps 
+     - --cache-to
+     - type=inline 
+     - --target
+     - deps
+     - --push
+     - -t
+     - us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/deps
+     - . 
+    id: 'Build Deps'
+    waitFor:
+      - 'bootstrap'
   
   - name: 'gcr.io/cloud-builders/docker:20.10.3'
     #args: ['buildx', 'build', '--cache-from', 'type=registry,ref=us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/builder', '--cache-to', 'type=inline', '--target', 'builder', '--push', '-t', 'us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/builder', '.' ]
     args: 
      - buildx
      - build
+     - --cache-from
+     - type=registry,ref=us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/deps 
      - --cache-from
      - type=registry,ref=us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/builder 
      - --cache-to
@@ -37,6 +58,7 @@ steps:
     id: 'Build Builder'
     waitFor:
       - 'bootstrap'
+      - 'Build Deps'
       
   # - id: 'Build Builder'
   #   name: 'gcr.io/cloud-builders/docker'
@@ -76,10 +98,10 @@ steps:
   #           --push .
   #   timeout: 600s
   - name: 'gcr.io/cloud-builders/docker:20.10.3'
-    args: ['buildx', 'build', '--cache-from', 'type=registry,ref=us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/builder', '--cache-to', 'type=registry,ref=us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA', '--push', '-t', 'us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA', '-t', 'us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$_PR_NUMBER', '.' ]
+    args: ['buildx', 'build', '--cache-from', 'type=registry,ref=us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/deps','--cache-from', 'type=registry,ref=us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/builder', '--cache-to', 'type=registry,ref=us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA', '--push', '-t', 'us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$SHORT_SHA', '-t', 'us-east5-docker.pkg.dev/$PROJECT_ID/gcb-test/images:$_PR_NUMBER', '.' ]
     id: 'Build'
     waitFor:
-      - 'Build Builder'
+      - 'Build Deps'
     # args:
     #   - '-c'
     #   - |
