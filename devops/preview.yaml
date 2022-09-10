@@ -1,5 +1,6 @@
 # yaml-language-server: $schema=https://json.schemastore.org/cloudbuild.json
 options:
+  machineType: 'E2_HIGHCPU_8'
   env:
     - DOCKER_CLI_EXPERIMENTAL=enabled
 
